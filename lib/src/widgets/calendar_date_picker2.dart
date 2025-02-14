@@ -229,7 +229,9 @@ class _CalendarDatePicker2State extends State<CalendarDatePicker2> {
   void _handleMonthChanged(DateTime value) {
     _vibrate();
     setState(() {
-      _mode = CalendarDatePicker2Mode.day;
+      if (widget.config.changeModeToSmaller == true) {
+        _mode = CalendarDatePicker2Mode.day;
+      }
       _handleDisplayedMonthDateChanged(value);
     });
   }
@@ -244,7 +246,9 @@ class _CalendarDatePicker2State extends State<CalendarDatePicker2> {
     }
 
     setState(() {
-      _mode = CalendarDatePicker2Mode.day;
+      if (widget.config.changeModeToSmaller == true) {
+        _mode = CalendarDatePicker2Mode.day;
+      }
       _handleDisplayedMonthDateChanged(value, fromYearPicker: true);
     });
   }
