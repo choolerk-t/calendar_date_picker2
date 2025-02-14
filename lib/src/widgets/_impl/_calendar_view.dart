@@ -341,7 +341,9 @@ class _CalendarViewState extends State<_CalendarView> {
                                 Axis.vertical
                             ? Icons.keyboard_arrow_up
                             : Icons.chevron_left),
-                    color: controlColor,
+                    color: _isDisplayingFirstMonth
+                        ? widget.config.disabledIconColor ?? controlColor
+                        : widget.config.iconColor ?? controlColor,
                     tooltip: _isDisplayingFirstMonth
                         ? null
                         : _localizations.previousMonthTooltip,
@@ -359,7 +361,9 @@ class _CalendarViewState extends State<_CalendarView> {
                                 Axis.vertical
                             ? Icons.keyboard_arrow_down
                             : Icons.chevron_right),
-                    color: controlColor,
+                    color: _isDisplayingLastMonth
+                        ? widget.config.disabledIconColor ?? controlColor
+                        : widget.config.iconColor ?? controlColor,
                     tooltip: _isDisplayingLastMonth
                         ? null
                         : _localizations.nextMonthTooltip,

@@ -201,6 +201,8 @@ class CalendarDatePicker2Config {
     this.selectedRangeHighlightBuilder,
     this.selectedRangeDecorationPredicate,
     this.changeModeToSmaller,
+    this.iconColor,
+    this.disabledIconColor,
   })  : calendarType = calendarType ?? CalendarDatePicker2Type.single,
         firstDate = DateUtils.dateOnly(firstDate ?? DateTime(1970)),
         lastDate =
@@ -434,6 +436,10 @@ class CalendarDatePicker2Config {
 
   /// Flag to change mode to smaller ex. Month -> Day
   final bool? changeModeToSmaller;
+
+  final Color? iconColor;
+
+  final Color? disabledIconColor;
 
   /// Copy the current [CalendarDatePicker2Config] with some new values
   CalendarDatePicker2Config copyWith({
