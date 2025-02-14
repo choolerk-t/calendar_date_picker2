@@ -144,13 +144,33 @@ class _DayPickerState extends State<_DayPicker> {
         widget.config.hideScrollViewMonthWeekHeader == true) {
       dayItems.clear();
     }
+
+    // Calculate previous month's days that should appear
+    final int previousMonth = month == 1 ? 12 : month - 1;
+    final int previousYear = month == 1 ? year - 1 : year;
+    final int daysInPreviousMonth =
+        DateUtils.getDaysInMonth(previousYear, previousMonth);
+
     // 1-based day of month, e.g. 1-31 for January, and 1-29 for February on
     // a leap year.
     int day = -dayOffset;
     while (day < daysInMonth) {
       day++;
       if (day < 1) {
-        dayItems.add(Container());
+        // Show previous month's days
+        final int previousMonthDay = daysInPreviousMonth + day;
+        final DateTime dayToBuild =
+            DateTime(previousYear, previousMonth, previousMonthDay);
+        dayItems.add(_buildDayCell(
+          context,
+          dayToBuild,
+          isDisabled: true,
+          isDimmed: true,
+          dayStyle: dayStyle,
+          disabledDayColor: disabledDayColor,
+          localizations: localizations,
+          daySplashColor: daySplashColor,
+        ));
       } else {
         final DateTime dayToBuild = DateTime(year, month, day);
         final bool isDisabled = dayToBuild.isAfter(widget.config.lastDate) ||
@@ -377,6 +397,25 @@ class _DayPickerState extends State<_DayPicker> {
       }
     }
 
+    // Add next month's days to fill the remaining cells
+    int nextMonthDay = 1;
+    final int nextMonth = month == 12 ? 1 : month + 1;
+    final int nextYear = month == 12 ? year + 1 : year;
+    while (dayItems.length < dayOffset + widget.dayRowsCount * 7) {
+      final DateTime dayToBuild = DateTime(nextYear, nextMonth, nextMonthDay);
+      dayItems.add(_buildDayCell(
+        context,
+        dayToBuild,
+        isDisabled: true,
+        isDimmed: true,
+        dayStyle: dayStyle,
+        disabledDayColor: disabledDayColor,
+        localizations: localizations,
+        daySplashColor: daySplashColor,
+      ));
+      nextMonthDay++;
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: _monthPickerHorizontalPadding,
@@ -420,6 +459,63 @@ class _DayPickerState extends State<_DayPicker> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildDayCell(
+    BuildContext context,
+    DateTime dayToBuild, {
+    required bool isDisabled,
+    required bool isDimmed,
+    required TextStyle dayStyle,
+    required Color disabledDayColor,
+    required MaterialLocalizations localizations,
+    required Color daySplashColor,
+  }) {
+    final bool isSelectedDay =
+        widget.selectedDates.any((d) => DateUtils.isSameDay(d, dayToBuild));
+    final bool isToday =
+        DateUtils.isSameDay(widget.config.currentDate, dayToBuild);
+
+    BoxDecoration? decoration;
+    Color dayColor =
+        isDimmed ? disabledDayColor.withOpacity(0.5) : disabledDayColor;
+
+    var customDayTextStyle =
+        widget.config.dayTextStylePredicate?.call(date: dayToBuild) ??
+            widget.config.dayTextStyle;
+
+    if (isDimmed) {
+      customDayTextStyle = customDayTextStyle?.copyWith(
+        color: dayColor,
+        fontWeight: FontWeight.normal,
+      );
+    }
+
+    final dayTextStyle = customDayTextStyle ?? dayStyle.apply(color: dayColor);
+
+    Widget dayWidget = widget.config.dayBuilder?.call(
+          date: dayToBuild,
+          textStyle: dayTextStyle,
+          decoration: decoration,
+          isSelected: isSelectedDay,
+          isDisabled: isDisabled,
+          isToday: isToday,
+        ) ??
+        _buildDefaultDayWidgetContent(
+          decoration,
+          localizations,
+          dayToBuild.day,
+          dayTextStyle,
+        );
+
+    dayWidget = Padding(
+      padding: const EdgeInsets.symmetric(vertical: 1),
+      child: dayWidget,
+    );
+
+    return ExcludeSemantics(
+      child: dayWidget,
     );
   }
 }
