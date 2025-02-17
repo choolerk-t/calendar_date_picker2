@@ -39,7 +39,7 @@ class _MonthPicker extends StatefulWidget {
 }
 
 class _MonthPickerState extends State<_MonthPicker> {
-  late ScrollController _scrollController;
+  // late ScrollController _scrollController;
   late Locale _locale;
 
   @override
@@ -49,8 +49,8 @@ class _MonthPickerState extends State<_MonthPicker> {
         widget.selectedDates.isNotEmpty && widget.selectedDates[0] != null
             ? _scrollOffsetForMonth(widget.selectedDates[0]!)
             : _scrollOffsetForMonth(DateUtils.dateOnly(DateTime.now()));
-    _scrollController = widget.config.monthViewController ??
-        ScrollController(initialScrollOffset: scrollOffset);
+    // _scrollController = widget.config.monthViewController ??
+    //     ScrollController(initialScrollOffset: scrollOffset);
   }
 
   @override
@@ -61,7 +61,7 @@ class _MonthPickerState extends State<_MonthPicker> {
           widget.selectedDates.isNotEmpty && widget.selectedDates[0] != null
               ? _scrollOffsetForMonth(widget.selectedDates[0]!)
               : _scrollOffsetForMonth(DateUtils.dateOnly(DateTime.now()));
-      _scrollController.jumpTo(scrollOffset);
+      // _scrollController.jumpTo(scrollOffset);
     }
   }
 
@@ -208,15 +208,28 @@ class _MonthPickerState extends State<_MonthPicker> {
               : null,
         ),
         Expanded(
-          child: GridView.builder(
-            controller: _scrollController,
-            gridDelegate: _monthPickerGridDelegate,
-            itemBuilder: _buildMonthItem,
-            itemCount: 12,
-            padding:
-                const EdgeInsets.symmetric(horizontal: _monthPickerPadding),
+          child: CupertinoDatePicker(
+            dateOrder: DatePickerDateOrder.dmy,
+            // backgroundColor: PrimaryColor.coralDeepBlue,
+            mode: CupertinoDatePickerMode.monthYear,
+            initialDateTime: widget.initialMonth,
+            onDateTimeChanged: (value) {
+              widget.onChanged(value);
+            },
+            maximumDate: widget.config.lastDate,
+            minimumDate: widget.config.firstDate,
           ),
         ),
+        // Expanded(
+        //   child: GridView.builder(
+        //     controller: _scrollController,
+        //     gridDelegate: _monthPickerGridDelegate,
+        //     itemBuilder: _buildMonthItem,
+        //     itemCount: 12,
+        //     padding:
+        //         const EdgeInsets.symmetric(horizontal: _monthPickerPadding),
+        //   ),
+        // ),
         Divider(
           color: widget.config.hideMonthPickerDividers == true
               ? Colors.transparent
